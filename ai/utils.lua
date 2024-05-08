@@ -274,7 +274,7 @@ function IsEnemy(player_index)
 	if IsTeamPlay() --[[and not FriendlyFire]] then
 		if (GetGameDir() == "tfc") or (GetGameDir() == "dod") then
 			-- dod & tfc are not using absolute team names, we need to compare team indexes from entities array
-		
+			
 			T1 = GetEntityTeam(GetClientIndex() + 1)
 			T2 = GetEntityTeam(player_index + 1)
 			
@@ -321,7 +321,7 @@ function FindEnemiesAndFriends()
 	
 	PlayerDistance = MAX_UNITS
 	PlayerKills = 0
-		
+	
 	for I = 1, GetPlayersCount() do
 		if I ~= GetClientIndex() + 1 then
 			if IsEntityActive(I) then
