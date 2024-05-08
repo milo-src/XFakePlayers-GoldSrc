@@ -34,6 +34,10 @@ function BuyWeapons()
 		return
 	end
 	
+	if math.random(1, 3) == 1 then -- get deagle
+		ExecuteCommand("deagle")
+	end
+	
 	ExecuteCommand("autobuy")
 	
 	NeedToBuyWeapons = false
