@@ -29,14 +29,8 @@ function Movement()
 		PrimitiveMovement()		
 	end
 		
-	if not Idle then
-		if HasFriendsNear and (GetDistance(NearestFriend) < 50) then
-			MoveOut(NearestFriend)
-		end
-	else
-		if HasPlayersNear and (GetDistance(NearestPlayer) < 50) then
-			MoveOut(NearestPlayer)
-		end
+	if HasPlayersNear and (GetDistance(NearestPlayer) < 50) then
+		MoveOut(NearestPlayer)
 	end
 end
 
@@ -109,12 +103,12 @@ function CheckStuckMonitor()
 	LastStuckCheckTime = Ticks()
 	
 	if IsCrouching() then
-		Divider = 5
+		Divider = 0.2
 	else
-		Divider = 3
+		Divider = 0.33333333333
 	end
 	
-	if GetDistance(Vec3Unpack(StuckOrigin)) < GetMaxSpeed() / Divider then 
+	if GetDistance(Vec3Unpack(StuckOrigin)) < GetMaxSpeed() * Divider then 
 		StuckWarnings = StuckWarnings + 1
 	else
 		StuckWarnings = StuckWarnings - 1
@@ -291,10 +285,6 @@ function ObjectivePlantingBomb()
 	if not IsWeaponExists(CS_WEAPON_C4) then
 		return
 	end
-	
-	if IsAreaChanged then
-	--	AI_Area.Flags := AI_Area.Flags or NAV_AREA_PLANTER_MARK;
-	end
 
 	if not MoveOnChain() and IsSlowThink then
 		if HasWorld() then
@@ -332,30 +322,25 @@ function ObjectivePlantingBomb()
 end
 
 function ObjectiveDefusingBomb() 
-	--[[if not IsBombPlanted then
+	if not IsBombPlanted then
 		return
 	end
 	
 	C4 = FindActiveEntityByModelName("models/w_c4")
 	
-	if not MoveOnChain() then
-		if C4 ~= nil then
-			O = Vec3.New(GetEntityOrigin(C4))
-			BuildChainEx("walking to bomb at", O)
-		else
-			BuildChainToAreaEx("searching bomb at", GetAreaForSearching)
-		end
+	if C4 ~= nil then
+		O = Vec3.New(GetEntityOrigin(C4))
 	else
-		if C4 ~= nil then
-			O = Vec3.New(GetEntityOrigin(C4))
-			
-			if O ~= ChainFinalPoint then
-				ResetObjectiveMovement()
-			end
-		end
-	end]]
+		O = Vec3.New(GetBombStatePosition()) -- find bomb on radar
+	end
 	
-	-- fuck this !!!
+	if not MoveOnChain() then
+		BuildChainEx("walking bomb at", O)
+	else
+		if (O ~= ChainFinalPoint) and IsSlowThink then
+			ResetObjectiveMovement()
+		end
+	end
 	
 	ObjectiveWalking()
 end
