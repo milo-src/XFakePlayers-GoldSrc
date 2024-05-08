@@ -1,37 +1,39 @@
 function Movement()
-	if IsAttacking() then
-		ResetStuckMonitor()
-	end
-	
-	if Behavior.CrouchWhenShooting and IsAttacking() and not NeedToDestroy then
-		Duck()
-	end
-	
-	if not Behavior.MoveWhenShooting and IsAttacking() then
-		return
-	end
+    if IsAttacking() then
+        ResetStuckMonitor()
+        if Behavior.CrouchWhenShooting and not NeedToDestroy then
+            Duck()
+        end
+        if Behavior.StrafeWhenShooting then
+            StrafeRandomly()
+        end
+    end
 
-	if not Behavior.MoveWhenReloading and IsReloading() and IsAttacking() then
-		return
-	end
-	
-	if IsPlantingBomb then
-		return
-	end
-	
-	if IsDefusingBomb then
-		return
-	end
-	
-	if HasNavigation() and not Idle then
-		ObjectiveMovement()
-	else
-		PrimitiveMovement()		
-	end
-		
-	if HasPlayersNear and (GetDistance(NearestPlayer) < 50) then
-		MoveOut(NearestPlayer)
-	end
+    if not Behavior.MoveWhenShooting and IsAttacking() then
+        return
+    end
+
+    if not Behavior.MoveWhenReloading and IsReloading() and IsAttacking() then
+        return
+    end
+
+    if IsPlantingBomb then
+        return
+    end
+
+    if IsDefusingBomb then
+        return
+    end
+
+    if HasNavigation() and not Idle then
+        ObjectiveMovement()
+    else
+        PrimitiveMovement()        
+    end
+
+    if HasPlayersNear and GetDistance(NearestPlayer) < 50 then
+        MoveOut(NearestPlayer)
+    end
 end
 
 function PrimitiveMovement()
