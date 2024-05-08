@@ -25,14 +25,6 @@ function Attack()
 		return
 	end
 	
-	if HasWorld() then
-	
-	else
-		if (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
-		
-		end
-	end
-	
 	AttackEx()
 end
 
