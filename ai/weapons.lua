@@ -33,7 +33,7 @@ function ReloadWeapon()
 		return
 	end
 	
-	PressButton(Button.RELOAD);
+	PressButton(Button.RELOAD)
 end
 
 function ChooseBestWeapon()
