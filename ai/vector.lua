@@ -150,7 +150,7 @@ end
 function Vec3LineCenter(A)
 	Lo = Vec3.New(A.LoX, A.LoY, A.LoZ)
 	Hi = Vec3.New(A.HiX, A.HiY, A.HiZ)
-	return (Lo + Hi) / 2
+	return (Lo + Hi) * 0.5
 end
 
 Vec2Line = {}
