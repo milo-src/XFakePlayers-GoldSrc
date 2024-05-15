@@ -1,5 +1,3 @@
-**Copyright (c) Ventel Software 2023-2024**
-
 1. **Project Description:**
    XFakePlayers-GoldSrc is a repository of Zbots for games on the GoldSrc platform, which have been partially reworked for the Lua programming language with the ability for easy editing.
 
