@@ -1,172 +1,156 @@
-
+-- Main tasks function
 function Tasks()
-	BuyWeapons()
-	PlantBomb()
-	DefuseBomb()
-	DestroyBreakables() 
-	
-	-- TODO: add health & armor recharging stations using in HL
-	-- TODO: add hostages using in CS, CZ
-	
-	
+    -- Execute individual task functions
+    BuyWeapons()
+    PlantBomb()
+    DefuseBomb()
+    DestroyBreakables()
+    
+    -- TODO: add health & armor recharging stations using in HL
+    -- TODO: add hostages using in CS, CZ
 end
 
+-- Function to handle weapon purchasing
 function BuyWeapons()
-	if not IsSlowThink then
-		return
-	end
-	
-	if not NeedToBuyWeapons then
-		return
-	end
-	
-	if (GetGameDir() ~= "cstrike") and (GetGameDir() ~= "czero") then
-		return
-	end
+    if not IsSlowThink then
+        return
+    end
 
-	Icon = FindStatusIconByName("buyzone") -- also, we can using world to find buyzone
-	
-	if Icon == nil then
-		return
-	end
-	
-	if GetStatusIconStatus(Icon) == 0 then -- byuzone icon is not on screen
-		return
-	end
-	
-	if math.random(1, 3) == 1 then -- get deagle
-		ExecuteCommand("deagle")
-	end
-	
-	ExecuteCommand("autobuy")
-	
-	NeedToBuyWeapons = false
+    if not NeedToBuyWeapons then
+        return
+    end
+
+    local gameDir = GetGameDir()
+    if gameDir ~= "cstrike" and gameDir ~= "czero" then
+        return
+    end
+
+    local icon = FindStatusIconByName("buyzone") -- also, we can use world to find buyzone
+    if not icon or GetStatusIconStatus(icon) == 0 then -- buyzone icon is not on screen
+        return
+    end
+
+    if math.random(1, 3) == 1 then -- get deagle
+        ExecuteCommand("deagle")
+    end
+
+    ExecuteCommand("autobuy")
+    NeedToBuyWeapons = false
 end
 
+-- Function to handle bomb planting
 function PlantBomb()
-	if not IsSlowThink and not IsPlantingBomb then
-		return
-	end
-	
-	IsPlantingBomb = false
+    if not IsSlowThink and not IsPlantingBomb then
+        return
+    end
 
-	if (GetGameDir() ~= "cstrike") and (GetGameDir() ~= "czero") then	
-		return
-	end
-	
-	Icon = FindStatusIconByName("c4") -- also, we can using world to find c4 zone
-	
-	if Icon == nil then
-		return
-	end
-	
-	if GetStatusIconStatus(Icon) ~= 2 then -- c4 icon is not flashing
-		return
-	end
+    IsPlantingBomb = false
 
-	IsPlantingBomb = true
+    local gameDir = GetGameDir()
+    if gameDir ~= "cstrike" and gameDir ~= "czero" then
+        return
+    end
 
-	if Behavior.DuckWhenPlantingBomb then
-		Duck()
-	end
-	
-	if GetWeaponAbsoluteIndex() ~= CS_WEAPON_C4 then
-		ChooseWeapon(GetWeaponByAbsoluteIndex(CS_WEAPON_C4))
-	else
-		PrimaryAttack() 
-	end
+    local icon = FindStatusIconByName("c4") -- also, we can use world to find c4 zone
+    if not icon or GetStatusIconStatus(icon) ~= 2 then -- c4 icon is not flashing
+        return
+    end
+
+    IsPlantingBomb = true
+
+    if Behavior.DuckWhenPlantingBomb then
+        Duck()
+    end
+
+    if GetWeaponAbsoluteIndex() ~= CS_WEAPON_C4 then
+        ChooseWeapon(GetWeaponByAbsoluteIndex(CS_WEAPON_C4))
+    else
+        PrimaryAttack()
+    end
 end
 
+-- Function to handle bomb defusal
 function DefuseBomb()
-	if not IsSlowThink and not IsDefusingBomb then
-		return
-	end
+    if not IsSlowThink and not IsDefusingBomb then
+        return
+    end
 
-	IsDefusingBomb = false
+    IsDefusingBomb = false
 
-	if (GetGameDir() ~= "cstrike") and (GetGameDir() ~= "czero") then	
-		return
-	end
-	
-	if GetPlayerTeam(GetClientIndex()) ~= "CT" then
-		return
-	end
-	
-	Entity = FindActiveEntityByModelName("models/w_c4")
-	
-	if Entity == nil then
-		return
-	end
-	
-	if GetGroundedDistance(Entity) > 50 then
-		return 
-	end
+    local gameDir = GetGameDir()
+    if gameDir ~= "cstrike" and gameDir ~= "czero" then
+        return
+    end
 
-	IsDefusingBomb = true
+    if GetPlayerTeam(GetClientIndex()) ~= "CT" then
+        return
+    end
 
-	LookAtEx(Entity)
+    local entity = FindActiveEntityByModelName("models/w_c4")
+    if not entity then
+        return
+    end
 
-	if Behavior.DuckWhenDefusingBomb then
-		Duck()
-	end
+    if GetGroundedDistance(entity) > 50 then
+        return
+    end
 
-	if GetGroundedDistance(Entity) > 25 then
-		MoveTo(Entity)
-	end
+    IsDefusingBomb = true
 
-	PressButton(Button.USE)
+    LookAtEx(entity)
+
+    if Behavior.DuckWhenDefusingBomb then
+        Duck()
+    end
+
+    if GetGroundedDistance(entity) > 25 then
+        MoveTo(entity)
+    end
+
+    PressButton(Button.USE)
 end
 
+-- Function to handle destruction of breakable objects
 function DestroyBreakables()
-	if not IsSlowThink then
-		return
-	end
-	
-	if not HasWorld() then
-		return
-	end
-	
-	-- TODO: we need to destroy objects only when this objects prevent our path
-	
-	NeedToDestroy = false
-	
-	Distance = MAX_UNITS
+    if not IsSlowThink then
+        return
+    end
 
-	for I = 0, GetEntitiesCount() - 1 do
-		if IsEntityActive(I) then
-			R = FindResourceModelByIndex(GetEntityModelIndex(I))
-			
-			if R ~= nil then
-				S = GetResourceName(R)
-				
-				if string.sub(S, 1, 1) == "*" then
-					E = GetWorldEntity("model", GetResourceName(R))
-				
-					if E ~= nil then
-						if GetWorldEntityField(E, "classname") == "func_breakable" then 
-							if GetWorldEntityField(E, "spawnflags") == "" then -- TODO: add extended flag checking 
-								
-								-- TODO: add entity health checking here
-								-- 		 try to break only if health less or equals 200
-								
-								J = tonumber(string.sub(S, 2))
-								
-								C = GetModelGabaritesCenter(J)
-								
-								-- TODO: add explosion radius checking here
-								
-								-- TODO: add Behavior.DestroyExplosions
-								
-								if (GetDistance(Vec3Unpack(C)) < Distance) and IsVisible(Vec3Unpack(C)) then
-									BreakablePosition = C
-									NeedToDestroy = true
-									Distance = GetDistance(Vec3Unpack(C))
-								end	
-							end
-						end
-					end
-				end
-			end
-		end
-	end
+    if not HasWorld() then
+        return
+    end
+
+    -- TODO: Destroy objects only when they block the path
+
+    local needToDestroy = false
+    local minDistance = MAX_UNITS
+
+    for i = 0, GetEntitiesCount() - 1 do
+        if IsEntityActive(i) then
+            local resourceModel = FindResourceModelByIndex(GetEntityModelIndex(i))
+            if resourceModel then
+                local resourceName = GetResourceName(resourceModel)
+                if string.sub(resourceName, 1, 1) == "*" then
+                    local worldEntity = GetWorldEntity("model", resourceName)
+                    if worldEntity and GetWorldEntityField(worldEntity, "classname") == "func_breakable" then
+                        if GetWorldEntityField(worldEntity, "spawnflags") == "" then -- TODO: add extended flag checking
+                            -- TODO: add entity health checking here, break only if health <= 200
+
+                            local modelIndex = tonumber(string.sub(resourceName, 2))
+                            local center = GetModelGabaritesCenter(modelIndex)
+                            -- TODO: add explosion radius checking here
+                            -- TODO: add Behavior.DestroyExplosions
+
+                            local distance = GetDistance(Vec3Unpack(center))
+                            if distance < minDistance and IsVisible(Vec3Unpack(center)) then
+                                BreakablePosition = center
+                                needToDestroy = true
+                                minDistance = distance
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
