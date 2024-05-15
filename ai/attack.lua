@@ -1,87 +1,81 @@
-
+-- Function to decide and execute an attack
 function Attack()
-	if NeedToDestroy then
-		AttackEx()
-		return
-	end
-	
-	if Idle then
-		return
-	end
-	
-	if not HasEnemiesNear then
-		return
-	end
-
-	if CurrentWeapon == nil then
-		return
-	end
-	
-	if not CanAttack() then
-		return
-	end
-
-	if IsReloading() then
-		return
-	end
-	
-	AttackEx()
+    -- If destruction is needed, perform special attack and return
+    if NeedToDestroy then
+        AttackEx()
+        return
+    end
+    
+    -- Exit if idle, no nearby enemies, no current weapon, can't attack, or reloading
+    if Idle or not HasEnemiesNear or CurrentWeapon == nil or not CanAttack() or IsReloading() then
+        return
+    end
+    
+    -- Execute the appropriate attack
+    AttackEx()
 end
 
-function AttackEx() -- fuck this 
-	LastAttackTime = Ticks()
-	
-	if GetGameDir() == "valve" then
-		Attack_HL()
-	elseif (GetGameDir() == "cstrike") or (GetGameDir() == "czero") then
-		Attack_CS()
-	elseif GetGameDir() == "hlfx" then
-		Attack_HL()
-	else
-		PrimaryAttack()
-	end
+-- Function to handle specific attack types based on game directory
+function AttackEx()
+    LastAttackTime = Ticks() -- Update the last attack time
+    
+    local gameDir = GetGameDir()
+    if gameDir == "valve" or gameDir == "hlfx" then
+        Attack_HL()
+    elseif gameDir == "cstrike" or gameDir == "czero" then
+        Attack_CS()
+    else
+        PrimaryAttack()
+    end
 end
 
+-- Function to handle Half-Life specific attacks
 function Attack_HL()
-	Index = GetWeaponIndex(CurrentWeapon)
-	
-	if Index == HL_WEAPON_CROWBAR then
-		KnifeAttack(false)
-	elseif Index == HL_WEAPON_EGON then
-		PrimaryAttack()
-	else
-		FastPrimaryAttack()
-	end
+    local index = GetWeaponIndex(CurrentWeapon)
+    
+    if index == HL_WEAPON_CROWBAR then
+        KnifeAttack(false)
+    elseif index == HL_WEAPON_EGON then
+        PrimaryAttack()
+    else
+        FastPrimaryAttack()
+    end
 end
 
+-- Function to handle Counter-Strike specific attacks
 function Attack_CS()
-	Slot = GetWeaponSlotID(CurrentWeapon)
-	
-	if Slot == CS_WEAPON_SLOT_RIFLE then
-		if CanUseWeapon(CurrentWeapon, true) then -- for reload able
-			PrimaryAttack()
-		end
-	elseif Slot == CS_WEAPON_SLOT_PISTOL then
-		FastPrimaryAttack()
-	elseif Slot == CS_WEAPON_SLOT_KNIFE then
-		KnifeAttack(true)
-	end
+    local slot = GetWeaponSlotID(CurrentWeapon)
+    
+    if slot == CS_WEAPON_SLOT_RIFLE then
+        if CanUseWeapon(CurrentWeapon, true) then -- Check if weapon can be used (e.g., not reloading)
+            PrimaryAttack()
+        end
+    elseif slot == CS_WEAPON_SLOT_PISTOL then
+        FastPrimaryAttack()
+    elseif slot == CS_WEAPON_SLOT_KNIFE then
+        KnifeAttack(true)
+    end
 end
 
-function KnifeAttack(CanAlternativeAttack)
-	if not HasEnemiesNear then
-		return
-	end
-	
-	MoveTo(NearestEnemy)
-	
-	if CanAlternativeAttack and Behavior.AlternativeKnifeAttack then
-		if GetDistance(NearestEnemy) < KNIFE_ALTERNATIVE_ATTACK_DISTANCE then
-			SecondaryAttack()
-		end
-	else
-		if GetDistance(NearestEnemy) < KNIFE_PRIMARY_ATTACK_DISTANCE then
-			PrimaryAttack()
-		end	
-	end
+-- Function to handle knife attacks
+function KnifeAttack(canAlternativeAttack)
+    -- Exit if no enemies are near
+    if not HasEnemiesNear then
+        return
+    end
+    
+    -- Move to the nearest enemy
+    MoveTo(NearestEnemy)
+    
+    -- Determine attack type based on distance and alternative attack capability
+    local distanceToEnemy = GetDistance(NearestEnemy)
+    if canAlternativeAttack and Behavior.AlternativeKnifeAttack then
+        if distanceToEnemy < KNIFE_ALTERNATIVE_ATTACK_DISTANCE then
+            SecondaryAttack()
+        end
+    else
+        if distanceToEnemy < KNIFE_PRIMARY_ATTACK_DISTANCE then
+            PrimaryAttack()
+        end    
+    end
 end
