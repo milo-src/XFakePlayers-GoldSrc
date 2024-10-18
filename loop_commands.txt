@@ -1,0 +1,14 @@
+
+// Loop commands for XFakePlayers bots
+// Automatically executed commands for consistent behavior
+
+bot_add
+bot_kick
+bot_kill
+bot_follow_user 1
+bot_grouping 1
+
+// Enhanced AI actions
+lua_run ai_move_to "random"
+lua_run ai_attack "nearest_enemy"
+lua_run ai_idle "on_event"
