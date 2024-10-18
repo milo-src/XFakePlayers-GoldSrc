@@ -2,62 +2,59 @@
 # XFakePlayers-GoldSrc
 
 **Project Description:**
-XFakePlayers-GoldSrc is a collection of reworked ZBots for games on the GoldSrc platform. The bots are integrated with Lua scripting, allowing for easy customization and editing, which makes it more versatile for developers and players.
+XFakePlayers-GoldSrc is a collection of reworked ZBots for games on the GoldSrc platform (such as Counter-Strike and Half-Life). The bots are integrated with Lua scripting, allowing for easy customization and editing, which makes it more versatile for developers and players.
 
-**Features:**
+## Features
 
 1. **Easy Setup**:  
-   These bots can be easily configured and customized through a client interface, providing maximum convenience for tweaking various parameters.
+   Bots can be easily configured and customized through a client interface, providing maximum convenience for tweaking various parameters.
 
 2. **Support for All GoldSrc Games**:  
-   The bots are client-side and can be used in any game that runs on the GoldSrc engine, such as Counter-Strike and Half-Life.
+   These bots are client-side and can be used in any game running on the GoldSrc engine.
 
 3. **Advanced Navigation System**:  
-   The navigation system is adapted from the bots in Counter-Strike: Condition Zero, which allows for seamless navigation across maps. These waypoints can be easily modified to adapt to new maps or specific game styles.
+   The navigation system is adapted from bots in Counter-Strike: Condition Zero, allowing seamless navigation across maps.
 
 4. **Experimental Features**:  
-   The bots have various experimental features such as flood functions, enabling players to test game servers or simply have fun with friends in private lobbies.
+   Includes flood functions, advanced AI tasks, and flexible Lua-based bot logic.
 
-5. **Interaction Capabilities**:  
-   The bots are capable of interacting with real players, shooting through obstacles, and performing complex actions similar to human players.
+## Installation Guide
 
-6. **Usage Restrictions**:  
-   Please note that the use of these bots for commercial purposes is strictly prohibited.
+1. **Download the Project**:  
+   Ensure you have the latest release of XFakePlayers. You can download the precompiled binaries (.exe and .dll) along with configuration files from the repository.
 
-7. **Multilingual Comments and Code Clarity**:  
-   The code has been updated to include detailed comments in both Russian and English, ensuring that developers from different backgrounds can understand and contribute.
+2. **Extract Files**:  
+   Extract the files to the root directory of the game that runs on the GoldSrc engine.
 
-**Screenshots:**
+3. **Configure Settings**:  
+   Edit the following configuration files according to your needs:
+   - `autoexec.cfg`: Contains initial startup commands.
+   - `loop_commands.txt`: Custom looped bot actions.
+   - `names.txt`: Bot names.
+   - `servers.txt`: Server information for bots.
 
-![Client Interface](https://github.com/milo-src/XFakePlayers-GoldSrc/blob/main/images/client_screen.png)  
-_Image: Client interface for configuring the bots._
+4. **Run the Bots**:  
+   Launch the `XFakePlayers.exe` to start managing and customizing the bots.
 
-![Navigation Editing](https://github.com/milo-src/XFakePlayers-GoldSrc/blob/main/images/game_nav_edit.png)  
-_Image: Editing navigation points for more accurate bot movement._
+## Configuration Files Overview
 
-![Gameplay Interaction](https://github.com/milo-src/XFakePlayers-GoldSrc/blob/main/images/game_screenshot1.png)  
-_Image: Bots interacting with real players in-game._
+- **`autoexec.cfg`**: Contains game engine initialization commands.
+- **`loop_commands.txt`**: Set commands for repeated bot actions.
+- **`servers.txt`**: List of servers to be used by bots for connections.
+- **`proxies.txt`**: Manage network proxy settings.
+- **Lua Scripts**: Located in the `ai/` directory, these scripts control bot behavior, attack logic, movement, and protocol communication.
 
-**Getting Started:**
+## Troubleshooting and FAQs
 
-1. **Installation**:
-   - Extract the contents of this repository into your GoldSrc game directory.
-   - Make sure `lua5.3.0.dll` is present in the main directory for Lua scripting support.
+1. **Bots Not Responding**:  
+   Ensure all configuration files are set up correctly, especially server IPs in `servers.txt`.
 
-2. **Configuration**:
-   - Edit the configuration files located in the `config` folder to customize bot behaviors.
-   - Use `autoexec.cfg` to load necessary settings during startup.
+2. **Bot Movement Issues**:  
+   Check that the waypoints for the current map are up-to-date. You can manually add waypoints or update them.
 
-3. **Running Bots**:
-   - Launch the game and use the `XClient.exe` to initiate and configure the bots.
+3. **AI Malfunction**:  
+   Ensure Lua scripts are not conflicting. You may need to debug specific functions inside the Lua scripts if bot behavior is erratic.
 
-**Contributing**:
+## License
 
-We welcome contributions from the community. Feel free to open an issue or submit a pull request if you have suggestions for improvement.
-
-**Disclaimer**:
-This project is intended for educational and entertainment purposes only. Use responsibly.
-
----
-
-If you need further help, refer to the Wiki section of our repository for a detailed guide on each feature.
+This project is licensed under the MIT License. See the LICENSE file for more details.
