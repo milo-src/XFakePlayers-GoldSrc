@@ -1,117 +1,51 @@
 
-function Look()
+-- Bot vision and target detection system
 
-
-if HasEnemiesNear and ((IsReloading() and Behavior.AimWhenReloading) or not IsReloading()) and not Idle then
-LookAtEx(NearestEnemy)
-return
-
-
+-- Initialize bot vision settings
+function InitializeVision()
+    fieldOfView = 90   -- Field of view in degrees
+    detectionRange = 1000 -- Maximum detection range in units
+    visionAccuracy = 0.8  -- Probability to correctly identify a target
 end
 
+-- Function to check if the bot sees a target
+function CanSeeTarget(botID, targetID)
+    local botPosition = GetBotPosition(botID)
+    local targetPosition = GetTargetPosition(targetID)
 
+    -- Calculate the distance between bot and target
+    local distance = CalculateDistance(botPosition, targetPosition)
+    
+    -- Check if target is within detection range
+    if distance > detectionRange then
+        return false
+    end
 
-if NeedToDestroy then
-LookAtEx(Vec3Unpack(BreakablePosition))
-return
+    -- Check if the target is within the bot's field of view
+    local angleToTarget = CalculateAngleToTarget(botPosition, targetPosition)
+    if math.abs(angleToTarget) > fieldOfView / 2 then
+        return false
+    end
 
+    -- Apply vision accuracy (e.g., fog, distraction, etc.)
+    if math.random() > visionAccuracy then
+        return false
+    end
 
+    return true
 end
 
-
-
-if HasNavigation() and not Idle then
-ObjectiveLook()
-else
-PrimitiveLook()
-
-
+-- Calculate distance between two positions
+function CalculateDistance(pos1, pos2)
+    local dx = pos2.x - pos1.x
+    local dy = pos2.y - pos1.y
+    local dz = pos2.z - pos1.z
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
 end
 
-LookAtEx(Vec3Unpack(LookPoint))
-
-
-end
-
-function PrimitiveLook()
-V = Vec3.New(GetVelocity())
-
-
-
-if Vec3Length(V) == 0 then
-return
-
-
-end
-
-LookPoint = Origin + V
-
-
-end
-
-function ObjectiveLook()
-
-
-if not HasChain() then
-return
-
-
-end
-
-
-
-if not IsAreaChanged then
-return
-
-
-end
-
-ViewArea = nil
-
-for I = 0, GetNavAreaApproachesCount(Area) - 1 do
-for J = #Chain, ChainIndex, -1 do
-A = GetNavAreaApproachHere(Area, I)
-
-
-
-if A == Chain[J] then
-ViewArea = A
-break
-
-
-end
-
-
-end
-
-
-
-if ViewArea ~= nil then
-break
-
-
-end
-
-
-end
-
-
-
-if ViewArea == nil then
-
-
-if #Chain > ChainIndex + OBJECTIVE_LOOKING_AREA_OFFSET then
-ViewArea = Chain[ChainIndex + OBJECTIVE_LOOKING_AREA_OFFSET]
-else
-ViewArea = Chain[#Chain]
-
-
-end
-
-
-end
-
-LookPoint = Vec3.New(GetNavAreaCenter(ViewArea)) + Vec3.New(0, 0, MyHeight())
-
-
+-- Calculate the angle to the target
+function CalculateAngleToTarget(botPosition, targetPosition)
+    local dx = targetPosition.x - botPosition.x
+    local dy = targetPosition.y - botPosition.y
+    return math.deg(math.atan2(dy, dx))
 end
