@@ -1,144 +1,71 @@
--- ai core file
 
--- Load necessary modules
-dofile "ai/vector.lua"
-dofile "ai/shared.lua"
-dofile "ai/protocol.lua"  -- Provides protocol-related functions
+-- Core AI functions for managing bot logic and behavior
 
-dofile "ai/think.lua"
+-- Initialize core settings and variables
+function InitializeCore()
+    -- Set default behavior settings
+    aggressionLevel = 2  -- Default aggression level (1 = passive, 3 = aggressive)
+    reactionTime = 0.2   -- Default reaction time in seconds
+    maxBots = 10         -- Maximum number of bots allowed
 
--- Initialization function
-function Initialization()
--- Seed the random number generator
-math.randomseed(os.time())
-
--- Set initial weapon state and spawn status
-LastKnownWeapon = GetWeaponByAbsoluteIndex(GetWeaponAbsoluteIndex())
-IsSpawned = IsAlive()
-
--- Execute a command
-
-if the game directory is "dmc"
-
-
-if GetGameDir() == "dmc" then
-ExecuteCommand("_firstspawn")
-
-
+    -- Initialize core bot states
+    BotStates = {}
 end
 
--- Handle model and color settings for spec
-
-ific game directories
-local gameDir = GetGameDir()
-
-
-if gameDir == "valve" or gameDir == "dmc" or gameDir == "gearbox" then
-
-
-if not IsTeamPlay() then
--- Set player model based on the game directory
-
-
-if gameDir == "gearbox" then
-ExecuteCommand("model " .. OPFOR_PLAYER_MODELS[math.random(#OPFOR_PLAYER_MODELS)])
-else
-ExecuteCommand("model " .. HL_PLAYER_MODELS[math.random(#HL_PLAYER_MODELS)])
-
-
+-- Function to handle the main AI loop
+function CoreAILoop()
+    for botID, botState in pairs(BotStates) do
+        if botState.isAlive then
+            ProcessBotBehavior(botID)
+        else
+            RespawnBot(botID)
+        end
+    end
 end
 
+-- Process individual bot behavior based on its state
+function ProcessBotBehavior(botID)
+    local botState = BotStates[botID]
 
+    -- Basic decision-making based on aggression level and situation
+    if botState.aggressionLevel >= 3 then
+        AttackEnemy(botID)
+    elseif botState.aggressionLevel == 2 then
+        PatrolArea(botID)
+    else
+        DefendPosition(botID)
+    end
+
+    -- Additional AI logic can be added here (e.g., teamwork, advanced strategies)
 end
 
--- Randomize player colors
-ExecuteCommand("topcolor " .. math.random(255))
-ExecuteCommand("bottomcolor " .. math.random(255))
-
-
+-- Handle bot respawn logic
+function RespawnBot(botID)
+    -- Logic for respawning the bot
+    if not BotStates[botID].isAlive then
+        BotStates[botID].isAlive = true
+        BotStates[botID].health = 100 -- Reset health on respawn
+    end
 end
 
--- Print idle mode status
-
-if idle
-
-
-if Idle then
-print("Idle mode")
-
-
+-- Enhanced attack logic for aggressive bots
+function AttackEnemy(botID)
+    -- Logic for attacking the nearest enemy
+    if HasEnemiesNear(botID) then
+        ExecuteAttack(botID)
+    else
+        SearchForEnemy(botID)
+    end
 end
 
-
+-- Patrol logic for neutral bots
+function PatrolArea(botID)
+    -- Simple patrol behavior
+    MoveToRandomPosition(botID)
 end
 
--- Finalization function (currently empty)
-function Finalization()
--- Placeholder for any cleanup operations needed
-
-
-end
-
--- Frame update function, called every frame
-function Frame()
--- Skip processing
-
-if in intermission or game is paused
-
-
-if GetIntermission() ~= 0 or IsPaused() then
-return
-
-
-end
-
--- Execute thinking routines
-PreThink()
-Think()
-PostThink()
-
-
-end
-
--- Function to handle various game triggers
-function OnTrigger(ATrigger)
-
-
-if ATrigger == "RoundStart" then
--- Reset round-spec
-
-ific states at the start of a round
-IsEndOfRound = false
-Spawn()
-
-
-if ATrigger == "RoundEnd" then
--- Set
-
-end-of-round state
-IsEndOfRound = true
-IsBombPlanted = false
-
-
-if ATrigger == "BombPlanted" then
--- Set bomb planted state
-IsBombPlanted = true
-
-
-if ATrigger == "BombDropped" then
--- Set bomb dropped state
-IsBombDropped = true
-
-
-if ATrigger == "BombPickedUp" then
--- Clear bomb dropped state
-IsBombDropped = false
-else
--- Log unknown triggers for debugging
-print("Unknown trigger: " .. ATrigger)
-
-
-end
-
-
+-- Defend logic for passive bots
+function DefendPosition(botID)
+    -- Stay in position and defend the area
+    StayInPosition(botID)
 end
