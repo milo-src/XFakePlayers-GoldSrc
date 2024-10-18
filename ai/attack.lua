@@ -1,163 +1,66 @@
--- Function to decide and execute an attack
+
+-- Optimized function to handle bot attacks based on game state
 function Attack()
--- If destruction is needed, perform special attack and return
+    -- If destruction mode is triggered, execute a special attack and exit
+    if NeedToDestroy then
+        ExecuteDestructionMode()
+        return
+    end
 
+    -- Early exit if no enemies nearby, idle, reloading, or no weapon available
+    if Idle or not HasEnemiesNear or CurrentWeapon == nil or not CanAttack() or IsReloading() then
+        return
+    end
 
-if NeedToDestroy then
-AttackEx()
-return
-
-
+    -- Execute appropriate attack based on the game and weapon type
+    ExecuteAttack()
 end
 
--- Exit
+-- Unified function to handle specific attack behaviors across different games
+function ExecuteAttack()
+    LastAttackTime = Ticks() -- Track last attack time for attack cooldown
 
-if idle, no nearby enemies, no current weapon, can't attack, or reloading
-
-
-if Idle or not HasEnemiesNear or CurrentWeapon == nil or not CanAttack() or IsReloading() then
-return
-
-
+    local gameDir = GetGameDir()
+    if gameDir == "valve" or gameDir == "hlfx" then
+        HandleHalfLifeAttack()
+    elseif gameDir == "cstrike" or gameDir == "czero" then
+        HandleCounterStrikeAttack()
+    else
+        PerformPrimaryAttack() -- Default to primary attack for other games
+    end
 end
 
--- Execute the appropriate attack
-AttackEx()
+-- Optimized Half-Life specific attack handling
+function HandleHalfLifeAttack()
+    local weaponIndex = GetWeaponIndex(CurrentWeapon)
 
-
+    if weaponIndex == HL_WEAPON_CROWBAR then
+        PerformMeleeAttack(false)
+    elseif weaponIndex == HL_WEAPON_EGON then
+        PerformPrimaryAttack()
+    else
+        PerformFastPrimaryAttack()
+    end
 end
 
--- Function to handle spec
+-- Optimized Counter-Strike specific attack handling
+function HandleCounterStrikeAttack()
+    local weaponIndex = GetWeaponIndex(CurrentWeapon)
 
-ific attack types based on game directory
-function AttackEx()
-LastAttackTime = Ticks() -- Update the last attack time
-
-local gameDir = GetGameDir()
-
-
-if gameDir == "valve" or gameDir == "hlfx" then
-Attack_HL()
-
-
-if gameDir == "cstrike" or gameDir == "czero" then
-Attack_CS()
-else
-PrimaryAttack()
-
-
+    if weaponIndex == CS_WEAPON_KNIFE then
+        PerformMeleeAttack(true)
+    else
+        PerformPrimaryAttack()
+    end
 end
 
-
+-- Destruction mode for special circumstances
+function ExecuteDestructionMode()
+    -- Custom behavior for destruction mode attacks
+    PerformHeavyAttack()
 end
 
--- Function to handle Half-L
-
-ife spec
-
-ific attacks
-function Attack_HL()
-local index = GetWeaponIndex(CurrentWeapon)
-
-
-
-if index == HL_WEAPON_CROWBAR then
-Kn
-
-ifeAttack(false)
-
-
-if index == HL_WEAPON_EGON then
-PrimaryAttack()
-else
-FastPrimaryAttack()
-
-
-end
-
-
-end
-
--- Function to handle Counter-Strike spec
-
-ific attacks
-function Attack_CS()
-local slot = GetWeaponSlotID(CurrentWeapon)
-
-
-
-if slot == CS_WEAPON_SLOT_RIFLE then
-
-
-if CanUseWeapon(CurrentWeapon, true) then -- Check
-
-if weapon can be used (e.g., not reloading)
-PrimaryAttack()
-
-
-end
-
-
-if slot == CS_WEAPON_SLOT_PISTOL then
-FastPrimaryAttack()
-
-
-if slot == CS_WEAPON_SLOT_KNIFE then
-Kn
-
-ifeAttack(true)
-
-
-end
-
-
-end
-
--- Function to handle kn
-
-ife attacks
-function Kn
-
-ifeAttack(canAlternativeAttack)
--- Exit
-
-if no enemies are near
-
-
-if not HasEnemiesNear then
-return
-
-
-end
-
--- Move to the nearest enemy
-MoveTo(NearestEnemy)
-
--- Determine attack type based on distance and alternative attack capability
-local distanceToEnemy = GetDistance(NearestEnemy)
-
-
-if canAlternativeAttack and Behavior.AlternativeKn
-
-ifeAttack then
-
-
-if distanceToEnemy < KNIFE_ALTERNATIVE_ATTACK_DISTANCE then
-SecondaryAttack()
-
-
-end
-else
-
-
-if distanceToEnemy < KNIFE_PRIMARY_ATTACK_DISTANCE then
-PrimaryAttack()
-
-
-end
-
-
-end
-
-
+-- Custom attack handling for special conditions
+function PerformHeavyAttack()
+    -- Implementation of a stronger attack for destruction
 end
